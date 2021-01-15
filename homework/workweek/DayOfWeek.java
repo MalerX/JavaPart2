@@ -14,7 +14,7 @@ public enum DayOfWeek {
     private final static int WORKS_DAY = 5;
 
     public static String getWorkingHours(DayOfWeek dayOfWeek) {
-        int hoursLeft = 8;
+        int hoursLeft = WORKS_HOURS;
         if (dayOfWeek != DayOfWeek.SATURDAY & dayOfWeek != DayOfWeek.SUNDAY) {
             for (int i = dayOfWeek.ordinal(); i != WORKS_DAY; i++) {
                 hoursLeft += WORKS_HOURS;
