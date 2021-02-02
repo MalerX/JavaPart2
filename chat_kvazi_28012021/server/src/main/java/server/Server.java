@@ -49,8 +49,10 @@ public class Server {
 
     private void privateMessage(ClientHandler sender, String msg) {
         String[] destination = msg.split("\\s");
-        StringBuilder sb = new StringBuilder(msg);
-        sb.delete(0, destination[0].length() + destination[1].length() + 2);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 2; i < destination.length; i++)
+            sb.append(destination[i]).append(" ");
+        sb.setLength(sb.length() - 1);
         String message = String.format("[ %s ] : %s", sender.getNickname(), sb.toString());
         boolean flag = false;
         for (ClientHandler client : clients) {
