@@ -39,4 +39,10 @@ public class SimpleAuthService implements AuthService {
 
         return null;
     }
+
+    @Override
+    public String setNicknameByLoginAndPassword(String login, String password) {
+        users.add(new UserData(login,password,login));
+        return login;
+    }
 }
