@@ -41,29 +41,29 @@ public class Server {
     }
 
     public void sendMessage(ClientHandler sender, String msg) {
-        if (msg.startsWith(Command.PRIVATE_MSG)) {
-            String[] destination = msg.split("\\s");
-            StringBuilder sb = new StringBuilder(msg);
-            sb.delete(0, destination[0].length() + destination[1].length() + 2);
-            boolean flag = false;
-            for (ClientHandler client : clients) {
-                if (client.getNickname().equals(destination[1])) {
-                    if (!client.equals(sender)) {
-                        privateMessage(sender, client, sb.toString());
-                        flag = true;
-                    }
-                }
-            }
-            if (!flag)
-                sender.sendMsg("Пользователь с таким никнеймом не зарегистрирован.");
-        } else broadcastMsg(sender, msg);
+        if (msg.startsWith(Command.PRIVATE_MSG))
+            privateMessage(sender, msg);
+        else broadcastMsg(sender, msg);
     }
 
 
-    private void privateMessage(ClientHandler sender, ClientHandler destination, String msg) {
-        String message = String.format("[ %s ] : %s", sender.getNickname(), msg);
-        sender.sendMsg(message);
-        destination.sendMsg(message);
+    private void privateMessage(ClientHandler sender, String msg) {
+        String[] destination = msg.split("\\s");
+        StringBuilder sb = new StringBuilder(msg);
+        sb.delete(0, destination[0].length() + destination[1].length() + 2);
+        String message = String.format("[ %s ] : %s", sender.getNickname(), sb.toString());
+        boolean flag = false;
+        for (ClientHandler client : clients) {
+            if (client.getNickname().equals(destination[1])) {
+                if (!client.equals(sender)) {
+                    sender.sendMsg(message);
+                    client.sendMsg(message);
+                    flag = true;
+                }
+            }
+        }
+        if (!flag)
+            sender.sendMsg("Пользователь с таким никнеймом не зарегистрирован.");
     }
 
     private void broadcastMsg(ClientHandler sender, String msg) {
