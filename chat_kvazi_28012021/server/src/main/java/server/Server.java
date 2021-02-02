@@ -1,5 +1,7 @@
 package server;
 
+import commands.Command;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -38,7 +40,33 @@ public class Server {
         }
     }
 
-    public void broadcastMsg(ClientHandler sender, String msg) {
+    public void sendMessage(ClientHandler sender, String msg) {
+        if (msg.startsWith(Command.PRIVATE_MSG)) {
+            String[] destination = msg.split("\\s");
+            StringBuilder sb = new StringBuilder(msg);
+            sb.delete(0, destination[0].length() + destination[1].length() + 2);
+            boolean flag = false;
+            for (ClientHandler client : clients) {
+                if (client.getNickname().equals(destination[1])) {
+                    if (!client.equals(sender)) {
+                        privateMessage(sender, client, sb.toString());
+                        flag = true;
+                    }
+                }
+            }
+            if (!flag)
+                sender.sendMsg("Пользователь с таким никнеймом не зарегистрирован.");
+        } else broadcastMsg(sender, msg);
+    }
+
+
+    private void privateMessage(ClientHandler sender, ClientHandler destination, String msg) {
+        String message = String.format("[ %s ] : %s", sender.getNickname(), msg);
+        sender.sendMsg(message);
+        destination.sendMsg(message);
+    }
+
+    private void broadcastMsg(ClientHandler sender, String msg) {
         String message = String.format("[ %s ] : %s", sender.getNickname(), msg);
         for (ClientHandler c : clients) {
             c.sendMsg(message);

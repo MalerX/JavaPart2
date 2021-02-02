@@ -59,7 +59,7 @@ public class ClientHandler {
                             break;
                         }
 
-                        server.broadcastMsg(this, str);
+                        server.sendMessage(this, str);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
