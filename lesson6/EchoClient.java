@@ -38,8 +38,8 @@ public class EchoClient extends JFrame {
         }).start();
         new Thread(() -> {
             try {
-                while (true){
                     Scanner scanner = new Scanner(System.in);
+                while (true){
                     out.writeUTF(scanner.nextLine());
                 }
             } catch (Exception e) {
