@@ -61,6 +61,9 @@ public class Server {
                     sender.sendMsg(message);
                     client.sendMsg(message);
                     flag = true;
+                } else {
+                    sender.sendMsg("Сам себе пишешь? Ну-ну...");
+                    flag = true;
                 }
             }
         }
