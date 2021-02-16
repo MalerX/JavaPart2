@@ -1,5 +1,7 @@
 package generic.homework.boxwithfruits;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
 public class Box<T extends Fruit> {                                             //Задание 3.b
@@ -13,7 +15,7 @@ public class Box<T extends Fruit> {                                             
         return boxWithFruits.size() * boxWithFruits.get(0).getWeightOfOne();
     }
 
-    public boolean compare(Box<?> box) {                                        //Задание 3.e
+    public boolean compare(@NotNull Box<?> box) {                                        //Задание 3.e
         return Math.abs(this.getWeightBox() - box.getWeightBox()) < 0.0001;
     }
 
