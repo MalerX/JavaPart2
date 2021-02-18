@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.sql.SQLException;
 
 public class ClientHandler {
     private Server server;
@@ -87,6 +88,17 @@ public class ClientHandler {
                                     continue;
                                 }
                                 server.privateMsg(this, token[1], token[2]);
+                            }
+                            if (str.startsWith(Command.CHANGE_NICK)) {
+                                String[] token = str.split("\\s+", 2);
+                                if (token.length < 2) {
+                                    continue;
+                                }
+                                if(server.changeNickname(login, token[1])) {
+                                    sendMsg(Command.CHANGE_NICK_OK);
+                                    sendMsg(nickname + " теперь известен как " + token[1]);
+                                    nickname = token[1];
+                                }
                             }
                         } else {
                             server.broadcastMsg(this, str);

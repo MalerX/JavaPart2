@@ -1,5 +1,6 @@
 package server;
 
+import com.sun.istack.internal.NotNull;
 import org.sqlite.core.DB;
 
 import java.sql.*;
@@ -19,14 +20,14 @@ public class DBUsers implements AuthService {
     private String nickname = "";
 
     private void getConnection() throws ClassNotFoundException, SQLException {
-            Class.forName("org.mariadb.jdbc.Driver");
-            String cntUrl = "jdbc:mysql://" + ADRESS + "/" + DATA_BASE;
-            connection = DriverManager.getConnection(cntUrl, USER, PASSWORD);
-	}	    
+        Class.forName("org.mariadb.jdbc.Driver");
+        String cntUrl = "jdbc:mysql://" + ADRESS + "/" + DATA_BASE;
+        connection = DriverManager.getConnection(cntUrl, USER, PASSWORD);
+    }
 
     private void getUserData(String inLogin) throws SQLException {
         try {
-	        getConnection();
+            getConnection();
             ps = connection.prepareStatement("SELECT * FROM users WHERE login = ?");
             ps.setString(1, inLogin);
             resultSet = ps.executeQuery();
@@ -43,7 +44,7 @@ public class DBUsers implements AuthService {
     }
 
     @Override
-    public String getNicknameByLoginAndPassword(String inLogin, String inPassword) {
+    public String getNicknameByLoginAndPassword(@NotNull String inLogin, @NotNull String inPassword) {
         try {
             getUserData(inLogin);
         } catch (SQLException e) {
@@ -55,7 +56,7 @@ public class DBUsers implements AuthService {
     }
 
     @Override
-    public boolean registration(String login, String password, String nickname) {
+    public boolean registration(@NotNull String login, @NotNull String password, @NotNull String nickname) {
         try {
             getUserData(login);
         } catch (SQLException e) {
@@ -64,6 +65,22 @@ public class DBUsers implements AuthService {
         if (login.equals(trueLogin))
             return false;
         return regNewUsers(login, password, nickname);
+    }
+
+    @Override
+    public boolean changeNickname(@NotNull String login, @NotNull String newNick) {
+        try {
+            getConnection();
+            ps = connection.prepareStatement("UPDATE users SET nickname = ? WHERE login = ?");
+            ps.setString(1, newNick);
+            ps.setString(2, login);
+            resultSet = ps.executeQuery();
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection();
+        }
+        return true;
     }
 
     private boolean regNewUsers(String login, String password, String nickname) {
@@ -91,4 +108,9 @@ public class DBUsers implements AuthService {
             e.printStackTrace();
         }
     }
+
+//    public static void main(String[] args) {
+//        DBUsers dbUsers = new DBUsers();
+//        dbUsers.changeNickname("aaa","ooo");
+//    }
 }

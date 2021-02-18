@@ -96,4 +96,8 @@ public class Server {
             c.sendMsg(message);
         }
     }
+
+    public boolean changeNickname(String login, String newNick) {
+        return authService.changeNickname(login, newNick);
+    }
 }
