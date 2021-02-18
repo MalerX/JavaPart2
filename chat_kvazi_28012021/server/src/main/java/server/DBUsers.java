@@ -26,7 +26,7 @@ public class DBUsers implements AuthService {
 
     private void getUserData(String inLogin) throws SQLException {
         try {
-	    getConnection();
+	        getConnection();
             ps = connection.prepareStatement("SELECT * FROM users WHERE login = ?");
             ps.setString(1, inLogin);
             resultSet = ps.executeQuery();
@@ -68,12 +68,13 @@ public class DBUsers implements AuthService {
 
     private boolean regNewUsers(String login, String password, String nickname) {
         try {
+            getConnection();
             ps = connection.prepareStatement("INSERT INTO users (uid, login, password, nickname) VALUES (NULL, ?, ?, ?);");
             ps.setString(1, login);
             ps.setString(2, password);
             ps.setString(3, nickname);
             resultSet = ps.executeQuery();
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         } finally {
             closeConnection();
