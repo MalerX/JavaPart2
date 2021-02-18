@@ -18,11 +18,15 @@ public class DBUsers implements AuthService {
     private String truePassword = "";
     private String nickname = "";
 
-    private void getUserData(String inLogin) throws SQLException {
-        try {
+    private void getConnection() throws ClassNotFoundException, SQLException {
             Class.forName("org.mariadb.jdbc.Driver");
             String cntUrl = "jdbc:mysql://" + ADRESS + "/" + DATA_BASE;
             connection = DriverManager.getConnection(cntUrl, USER, PASSWORD);
+	}	    
+
+    private void getUserData(String inLogin) throws SQLException {
+        try {
+	    getConnection();
             ps = connection.prepareStatement("SELECT * FROM users WHERE login = ?");
             ps.setString(1, inLogin);
             resultSet = ps.executeQuery();
@@ -31,7 +35,7 @@ public class DBUsers implements AuthService {
                 truePassword = resultSet.getString("password");
                 nickname = resultSet.getString("nickname");
             }
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         } finally {
             closeConnection();
@@ -64,15 +68,12 @@ public class DBUsers implements AuthService {
 
     private boolean regNewUsers(String login, String password, String nickname) {
         try {
-            Class.forName("org.mariadb.jdbc.Driver");
-            String cntUrl = "jdbc:mysql://" + ADRESS + "/" + DATA_BASE;
-            connection = DriverManager.getConnection(cntUrl, USER, PASSWORD);
             ps = connection.prepareStatement("INSERT INTO users (uid, login, password, nickname) VALUES (NULL, ?, ?, ?);");
             ps.setString(1, login);
             ps.setString(2, password);
             ps.setString(3, nickname);
             resultSet = ps.executeQuery();
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             closeConnection();
