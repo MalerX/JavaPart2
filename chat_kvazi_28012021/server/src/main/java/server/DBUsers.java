@@ -10,9 +10,9 @@ public class DBUsers implements AuthService {
     private final String PASSWORD = "kvazimodo";
     private final String DATA_BASE = "kvazimodo_auth";
 
-    Connection connection = null;
-    PreparedStatement ps = null;
-    ResultSet resultSet = null;
+    private Connection connection = null;
+    private PreparedStatement ps = null;
+    private ResultSet resultSet = null;
 
     private String trueLogin = "";
     private String truePassword = "";
