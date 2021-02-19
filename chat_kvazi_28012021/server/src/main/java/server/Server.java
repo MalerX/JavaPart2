@@ -18,7 +18,7 @@ public class Server {
 
     public Server() {
         clients = new CopyOnWriteArrayList<>();
-        authService = new SimpleAuthService();
+        authService = new DBUsers();
         try {
             server = new ServerSocket(PORT);
             System.out.println("server started");
@@ -95,5 +95,9 @@ public class Server {
         for (ClientHandler c : clients) {
             c.sendMsg(message);
         }
+    }
+
+    public boolean changeNickname(String login, String newNick) {
+        return authService.changeNickname(login, newNick);
     }
 }
