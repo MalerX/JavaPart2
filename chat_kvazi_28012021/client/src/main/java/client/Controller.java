@@ -203,6 +203,7 @@ public class Controller implements Initializable {
                 textArea.appendText(str + "\n");
             i++;
         }
+        history_read.close();
     }
 
 
