@@ -4,6 +4,8 @@ import com.sun.istack.internal.NotNull;
 import org.sqlite.core.DB;
 
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DBUsers implements AuthService {
     private final String ADRESS = "192.168.0.11";
@@ -108,9 +110,18 @@ public class DBUsers implements AuthService {
             e.printStackTrace();
         }
     }
-
-//    public static void main(String[] args) {
-//        DBUsers dbUsers = new DBUsers();
-//        dbUsers.changeNickname("aaa","ooo");
-//    }
+    public Map<String, String> getFilter() {
+        Map<String, String> filter = new HashMap<>();
+        try {
+            getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM filter");
+            while (resultSet.next()) {
+                filter.put(resultSet.getString(1),resultSet.getString(2));
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return filter;
+    }
 }

@@ -6,9 +6,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.sql.SQLException;
 
 public class ClientHandler {
+    private final boolean CENSORSHIP_MODE = true;
+
     private Server server;
     private Socket socket;
 
@@ -94,13 +95,27 @@ public class ClientHandler {
                                 if (token.length < 2) {
                                     continue;
                                 }
-                                if(server.changeNickname(login, token[1])) {
+                                if (server.changeNickname(login, token[1])) {
                                     sendMsg(Command.CHANGE_NICK_OK);
                                     sendMsg(nickname + " теперь известен как " + token[1]);
                                     nickname = token[1];
                                 }
                             }
-                        } else {
+                        } else if (CENSORSHIP_MODE) {
+                            StringBuilder sb = new StringBuilder();
+                            String[] wordToCens = str.split("\\s");
+                            String tmp;
+                            for (int i = 0; i < wordToCens.length; i++) {
+                                tmp = server.doCensor(wordToCens[i]);
+                                if (tmp != null)
+                                    wordToCens[i] = tmp;
+                            }
+                            for (String word : wordToCens) {
+                                sb.append(word).append(" ");
+                            }
+                            str = sb.substring(0, sb.length() - 1);
+                        }
+                        {
                             server.broadcastMsg(this, str);
                         }
                     }
