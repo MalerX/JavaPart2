@@ -115,10 +115,13 @@ public class DBUsers implements AuthService {
         try {
             getConnection();
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM filter");
-            while (resultSet.next()) {
-                filter.put(resultSet.getString(1),resultSet.getString(2));
+            ResultSet rs = statement.executeQuery("SELECT * FROM filter");
+            while (rs.next()) {
+                filter.put(rs.getString(1),rs.getString(2));
             }
+            rs.close();
+            statement.close();
+            connection.close();
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
