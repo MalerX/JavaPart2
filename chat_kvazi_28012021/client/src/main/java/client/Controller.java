@@ -20,7 +20,6 @@ import javafx.stage.WindowEvent;
 import java.io.*;
 import java.net.Socket;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
