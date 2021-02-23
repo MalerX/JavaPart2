@@ -84,6 +84,11 @@ public class Controller implements Initializable {
                                 System.out.println("server disconnected us");
                                 throw new RuntimeException("server disconnected us");
                             }
+                            if (str.startsWith(Command.REG_NEW_USR_OK)) {
+                                nickname = str.split("\\s")[1];
+                                setAuthenticated(true);
+                                break;
+                            }
                             if (str.startsWith(Command.AUTH_OK)) {
                                 nickname = str.split("\\s")[1];
                                 setAuthenticated(true);
@@ -131,6 +136,18 @@ public class Controller implements Initializable {
                 textField.clear();
                 textField.requestFocus();
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void regNewUser(ActionEvent actionEvent) {
+        if (socket == null || socket.isClosed())
+            connect();
+        String msg = String.format("%s %s %s", Command.REG_NEW_USR, loginField.getText().trim(), passwordField.getText().trim());
+        try {
+            out.writeUTF(msg);
+            passwordField.clear();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -34,7 +34,17 @@ public class ClientHandler {
                                 out.writeUTF(Command.END);
                                 throw new RuntimeException("client want to disconnected");
                             }
-                            if (str.startsWith(Command.AUTH)) {
+                            if (str.startsWith(Command.REG_NEW_USR)) {
+                                String[] token = str.split("\\s");
+                                String newNick = server.getAuthService()
+                                        .setNicknameByLoginAndPassword(token[1],token[2]);
+                                if (newNick != null) {
+                                    nickname = newNick;
+                                    sendMsg(Command.REG_NEW_USR_OK + " " + nickname);
+                                    server.subscribe(this);
+                                    break;
+                                }
+                            } else if (str.startsWith(Command.AUTH)) {
                                 String[] token = str.split("\\s");
                                 String newNick = server.getAuthService()
                                         .getNicknameByLoginAndPassword(token[1], token[2]);
