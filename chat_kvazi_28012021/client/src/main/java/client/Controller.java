@@ -9,10 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ListView;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
@@ -20,14 +17,14 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
+    private final int QUANTITY = 3;
+
     @FXML
     public ListView<String> clientList;
     @FXML
@@ -42,6 +39,15 @@ public class Controller implements Initializable {
     private HBox authPanel;
     @FXML
     private HBox messagePanel;
+    @FXML
+    private RadioButton history_on = new RadioButton("ON");             //заготовки вкл/выкл записи истории.
+    @FXML
+    private RadioButton history_off = new RadioButton("OFF");
+    ToggleGroup group_history = new ToggleGroup();
+
+    private File history = new File("history.txt");
+    private BufferedReader history_read;
+    private BufferedWriter history_write;
 
     private static Socket socket;
     private static final int PORT = 8189;
@@ -50,21 +56,25 @@ public class Controller implements Initializable {
     private static DataInputStream in;
     private static DataOutputStream out;
 
-    private boolean authenticated;
     private String nickname;
 
     private Stage stage;
     private Stage regStage;
     private RegController regController;
 
+    public Controller() throws FileNotFoundException {
+    }
+
     public void setAuthenticated(boolean authenticated) {
-        this.authenticated = authenticated;
         messagePanel.setVisible(authenticated);
         messagePanel.setManaged(authenticated);
         authPanel.setVisible(!authenticated);
         authPanel.setManaged(!authenticated);
         clientList.setVisible(authenticated);
         clientList.setManaged(authenticated);
+        history_off.setToggleGroup(group_history);
+        history_on.setToggleGroup(group_history);
+        group_history.selectToggle(history_on);
 
         if (!authenticated) {
             nickname = "";
@@ -101,6 +111,7 @@ public class Controller implements Initializable {
             socket = new Socket(IP_ADDRESS, PORT);
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
+            history_write = new BufferedWriter(new FileWriter(history,true));
 
             new Thread(() -> {
                 try {
@@ -128,7 +139,8 @@ public class Controller implements Initializable {
                             textArea.appendText(str + "\n");
                         }
                     }
-
+                    //подгрузка истории сообщений.
+                    getHistory(QUANTITY);
                     //цикл работы
                     while (true) {
                         String str = in.readUTF();
@@ -150,6 +162,8 @@ public class Controller implements Initializable {
                             }
                         } else {
                             textArea.appendText(str + "\n");
+                            history_write.write(str + "\n");
+                            history_write.flush();
                         }
                     }
                 } catch (RuntimeException e) {
@@ -170,6 +184,26 @@ public class Controller implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void getHistory(int quantity) throws IOException {
+        history_read = new BufferedReader(new FileReader(history));
+        int totalLines = 0;
+        while (history_read.readLine() != null)
+            totalLines++;
+        history_read.close();
+        int beginPosition = totalLines - quantity;
+        if (totalLines == 0 || beginPosition <= 0)
+            return;
+        String str;
+        history_read = new BufferedReader(new FileReader(history));
+        int i = 0;
+        while ((str = history_read.readLine()) != null) {
+            if (i >= beginPosition && i <= totalLines)
+                textArea.appendText(str + "\n");
+            i++;
+        }
+        history_read.close();
     }
 
 

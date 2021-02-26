@@ -1,11 +1,13 @@
 package server;
 
+import com.sun.istack.internal.NotNull;
 import commands.Command;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
@@ -15,10 +17,15 @@ public class Server {
     private final int PORT = 8189;
     private List<ClientHandler> clients;
     private AuthService authService;
+    private Map<String, String> filter;
+
+    private final boolean CENSORSHIP_MODE = true;
 
     public Server() {
         clients = new CopyOnWriteArrayList<>();
         authService = new DBUsers();
+        if (CENSORSHIP_MODE)
+            filter = authService.getFilter();
         try {
             server = new ServerSocket(PORT);
             System.out.println("server started");
@@ -97,7 +104,14 @@ public class Server {
         }
     }
 
-    public boolean changeNickname(String login, String newNick) {
-        return authService.changeNickname(login, newNick);
+    public boolean changeNickname(@NotNull String login,@NotNull String newNick) {
+        if(authService.changeNickname(login, newNick)) {
+            broadcastClientList();
+            return true;
+        }
+        return false;
+    }
+    public String doCensor(String word) {
+        return filter.get(word);
     }
 }
