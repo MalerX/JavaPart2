@@ -6,7 +6,6 @@ public class SpecialRaces {
     public static final int CARS_COUNT = 4;
 
     public static void main(String[] args) {
-        ExecutorService trackWorker = Executors.newFixedThreadPool(CARS_COUNT);
         CountDownLatch startingGun = new CountDownLatch(CARS_COUNT);
         CountDownLatch girlWithFlag = new CountDownLatch(1);
         CountDownLatch gameOver = new CountDownLatch(CARS_COUNT);
@@ -21,10 +20,9 @@ public class SpecialRaces {
         for (Car car : cars) new Thread(car).start();
         try {
             startingGun.await();
-        System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка началась!!!");
+            System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка началась!!!");
             girlWithFlag.await();
-            if (girlWithFlag.getCount() == 0)
-                System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> У нас есть победитель!");
+            System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> У нас есть победитель!");
             gameOver.await();
             System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка закончилась!!!");
         } catch (InterruptedException e) {
