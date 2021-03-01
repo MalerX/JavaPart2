@@ -17,6 +17,7 @@ public class Tunnel extends Stage {
             try {
                 System.out.printf("%s готовится к этапу (ждёт): %s%n", car.getName(), this.description);
                 tunnelManager.acquire();
+                System.out.printf("%s начал этап: %s%n", car.getName(), this.description);
                 Thread.sleep(this.length / car.getSpeed() * 1000L);
             } catch (InterruptedException e) {
                 e.printStackTrace();
