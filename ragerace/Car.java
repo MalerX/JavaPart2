@@ -1,11 +1,10 @@
 package multithreads.homework.ragerace;
 
 import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 
-public class Car implements Runnable, Callable {
+public class Car implements Runnable {
     private static int CARS_COUNT;
     private final Race race;
     private final int speed;
@@ -15,6 +14,8 @@ public class Car implements Runnable, Callable {
     private final CountDownLatch startingGun;
     private final CountDownLatch girlWithFlag;
     private final CountDownLatch gameOver;
+
+    private static boolean IS_WINNER = false;
 
     public String getName() {
         return name;
@@ -49,11 +50,10 @@ public class Car implements Runnable, Callable {
         for (int i = 0; i < race.getStages().size(); i++)
             race.getStages().get(i).go(this);
         girlWithFlag.countDown();
+        if (!IS_WINNER) {
+            System.out.printf("%s WIN%n", this.name);
+            IS_WINNER = true;
+        }
         gameOver.countDown();
-    }
-
-    @Override
-    public String call() throws Exception {
-        return String.format("Победил %s",this.name);
     }
 }
