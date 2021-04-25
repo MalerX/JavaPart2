@@ -51,16 +51,20 @@ public class NeoBASH implements Runnable {
             if (!inStr.isEmpty()) {
                 String result = command.execute(inStr);
                 if (result.equals("close NeoBASH")) {
-                    try {
-                        send("Good Bay!\n");
-                        System.out.printf("Client from %s disconnect\n", socketChannel.getRemoteAddress());
-                        socketChannel.close();
-                    } catch (IOException e) {
-                        System.err.println("Fail close socket: " + e);
-                    }
-                } else if (!result.equals(""))
+                    close();
+                } else
                     send(result);
             }
+        }
+    }
+
+    private void close() {
+        try {
+            send("Good Bay!\n");
+            System.out.printf("Client from %s disconnect\n", socketChannel.getRemoteAddress());
+            socketChannel.close();
+        } catch (IOException e) {
+            System.err.println("Fail close socket: " + e);
         }
     }
 }
