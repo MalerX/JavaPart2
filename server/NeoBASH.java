@@ -48,7 +48,7 @@ public class NeoBASH implements Runnable {
     public void run() {
         while (socketChannel.isOpen()) {
             String inStr = readFromChannel();
-            if (!inStr.equals("")) {
+            if (!inStr.isEmpty()) {
                 String result = command.execute(inStr);
                 if (result.equals("close NeoBASH")) {
                     try {
